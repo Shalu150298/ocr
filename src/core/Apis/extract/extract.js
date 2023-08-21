@@ -2,7 +2,7 @@ import Axios from "axios";
 
 export const extract = (data) => {
     return new Promise ((resolve, reject) => {
-        const url = 'http://product.cloudstrats.ai:3030/api/akshar-ai/text-summarizer/';
+        const url = 'https://product.cloudstrats.ai/api/akshar-ai/text-summarizer/';
         const headers = {
            
             "CLIENT-KEY":"3G6XuF4cIEHh7o5zhUYGNmeK8FRSoPbU5sShkFCL",

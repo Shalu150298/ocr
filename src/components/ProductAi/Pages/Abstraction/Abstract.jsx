@@ -11,9 +11,14 @@ import {
   faUpload,
   faPercentage,
   faPercent,
+  faUndo,
 } from "@fortawesome/free-solid-svg-icons";
 import Button from "react-bootstrap/Button";
 import { abstract } from "../../../../core/Apis/abstract/abstract";
+import { keyword } from "../../../../core/Apis/keyword/keywords";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { ColorRing } from "react-loader-spinner";
 
 const Abstract = () => {
   // const canvasRef = useRef(null);
@@ -75,37 +80,64 @@ const Abstract = () => {
   // };
 
   const [abstractText, setAbstractText] = useState();
-  const [ans , setAns] = useState("");
+  const [ans, setAns] = useState("");
   const [length, setLenght] = useState("");
   const [sentences, setSentences] = useState("");
   const [words, setWords] = useState("");
+  const [keywords, setKeywords] = useState("");
+  const [keywordsans, setKeywordsAns] = useState([]);
+  const [loader, setloder] = useState(false);
+  const [keyLoader, setkeyLoader] = useState(false);
   const onChange = (e) => {
     const name = e.target.name;
     const value = e.target.value;
 
     setAbstractText((prevState) => ({
       ...prevState,
-      [name]: value
-    }))
+      [name]: value,
+    }));
+
+    setKeywords((prevState) => ({
+      ...prevState,
+      [name]: value,
+    }));
   };
 
   const handleSubmit = async (e) => {
-       e.preventDefault();
-       abstract(abstractText)
-       .then((data) => {
+    e.preventDefault();
+    setloder(true);
+    abstract(abstractText)
+      .then((data) => {
         console.log(data);
-        console.log(data.data.Response.Summarize_data)
+        console.log(data.data.Response.Summarize_data);
+        setloder(false);
         setAns(data.data.Response.Summarize_data);
         setLenght(data.data.Response.Input_text_length);
         setSentences(data.data.Response.Number_of_Sentences);
         setWords(data.data.Response.Number_of_Words);
-       })
-       .catch(
-          (e) => {
-            console.log(e)
-          }
-       )
-  }
+      })
+      .catch((e) => {
+        console.log(e);
+        setloder(false);
+      });
+  };
+
+  const keysubmit = async (e) => {
+    e.preventDefault();
+    console.log("api hit ");
+    setkeyLoader(true);
+    keyword(keywords)
+      .then((data) => {
+        console.log(data);
+        console.log(data.data.Keywords_list);
+        setkeyLoader(false);
+        setKeywordsAns(data.data.Keywords_list);
+      })
+      .catch((e) => {
+        console.log(e);
+        setkeyLoader(false);
+      });
+  };
 
   // Audio
   const [volume, setVolume] = useState(50);
@@ -114,138 +146,86 @@ const Abstract = () => {
     const newVolume = event.target.value;
     setVolume(newVolume);
   };
-  const handlePlay = () => {
-    if (audioRef.current.paused) {
-      audioRef.current.play();
-    } else {
-      audioRef.current.pause();
-    }
-  };
 
   // copy
-  const textareaRef = useRef(null);
+
   const handleCopy = () => {
-    textareaRef.current.select();
-    document.execCommand("copy");
+    toast.success("copy text");
+    navigator.clipboard.writeText(ans);
   };
 
-  const handleDownload = () => {
-    const content = textareaRef.current.value;
-    const element = document.createElement("a");
-    const file = new Blob([content], { type: "text/plain" });
-    element.href = URL.createObjectURL(file);
-    element.download = "textfile.txt";
-    document.body.appendChild(element);
-    element.click();
-    document.body.removeChild(element);
+  const handleKeyCopy = () => {
+    toast.success("copy text");
+    navigator.clipboard.writeText(keywordsans);
   };
 
-  // mic
-  const [isListening, setIsListening] = useState(false);
-  const recognitionRef = useRef(null);
+  const handleDownload = (e) => {
+    e.preventDefault();
+    const blob = new Blob([ans], {
+      type: "text/plain",
+    });
+    const url = window.URL.createObjectURL(blob);
 
-  const handleSpeechRecognition = () => {
-    if (!isListening) {
-      startSpeechRecognition();
-    } else {
-      stopSpeechRecognition();
-    }
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "textFile.txt";
+    link.click();
+
+    // Clean up the temporary URL
+    window.URL.revokeObjectURL(url);
+
+    toast.info("Text file downloaded");
   };
 
-  const startSpeechRecognition = () => {
-    recognitionRef.current = new window.webkitSpeechRecognition();
-    recognitionRef.current.continuous = true;
-    recognitionRef.current.interimResults = false;
+  const handleKeyDownload = (e) => {
+    e.preventDefault();
+    const blob = new Blob([keywordsans], {
+      type: "text/plain",
+    });
+    const url = window.URL.createObjectURL(blob);
 
-    recognitionRef.current.onstart = () => {
-      setIsListening(true);
-      console.log("Speech recognition started");
-    };
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "textFile.txt";
+    link.click();
 
-    recognitionRef.current.onend = () => {
-      setIsListening(false);
-      console.log("Speech recognition ended");
-    };
+    // Clean up the temporary URL
+    window.URL.revokeObjectURL(url);
 
-    recognitionRef.current.onerror = (event) => {
-      console.error("Speech recognition error occurred: ", event.error);
-    };
-
-    recognitionRef.current.onresult = (event) => {
-      const result = event.results[event.results.length - 1][0].transcript;
-      console.log("Speech recognition result:", result);
-    };
-
-    recognitionRef.current.start();
+    toast.info("Text file downloaded");
   };
 
-  const stopSpeechRecognition = () => {
-    if (recognitionRef.current) {
-      recognitionRef.current.stop();
-    }
+  const toggleVisibility = () => {
+    setIsVisible(!isVisible);
   };
-
-  // end mic
-
-  const [selectedFile, setSelectedFile] = useState(null);
-
-  const handleFileSelect = (event) => {
-    const file = event.target.files[0];
-    setSelectedFile(file);
-  };
-
-  const handleDragOver = (event) => {
-    event.preventDefault();
-  };
-
-  const handleDrop = (event) => {
-    event.preventDefault();
-    const file = event.dataTransfer.files[0];
-    setSelectedFile(file);
-  };
-
-  const [selectedPercentage, setSelectedPercentage] = useState("");
-
-  const handlePercentageChange = (e) => {
-    setSelectedPercentage(e.target.value);
-  };
-
-  const generateOptions = () => {
-    const options = [];
-    for (let i = 0; i <= 100; i += 10) {
-      options.push(
-        <option key={i} value={i}>
-          {i}%
-        </option>
-      );
-    }
-    return options;
-  };
-
-  const [selectedFileName, setSelectedFileName] = useState(
-    "Select Text File or upload"
-  );
-  const handleFileChange = (event) => {
-    setSelectedFileName(event.target.files[0].name);
-  };
-
   return (
     <section class="section1">
+      <ToastContainer
+        position="top-right"
+        autoClose={2000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="dark"
+      />
       <div className="p-0 py-3 pl-0 pl-lg-5" id="main_text">
-        <form>
-          <div className=" row justify-content-center mainURl  g-3  pb-2">
+        {/* <div className=" row justify-content-center mainURl  g-3  pb-2">
             <div class="col-md-5 ">
               <div className="uploadFile1 p-2">
                 <FontAwesomeIcon icon={faUpload} className="px-2" />
-                <span className="filename1">{selectedFileName}</span>
+                <span className="filename1"></span>
                 <input
                   type="file"
                   id="formFile"
                   class="form-control inputfile  "
                   placeholder="file"
-                  onChange={handleFileChange}
+                  // onChange={handleFileChange}
                   style={{ border: " 1px dotted #6c757d42 " }}
-                />{" "}
+                />
               </div>
             </div>
             <div class="col-md-5 ">
@@ -259,37 +239,35 @@ const Abstract = () => {
             <div class="col-md-2">
               <Button as="input" type="submit" value="Upload" />
             </div>
-          </div>
+          </div> */}
 
-          <div id="text">
-            <div className="main-wrapper">
-              {isVisibleconhide && (
-                <div class="container-flued">
-                  <div className=" d-flex p-0">
-                    <div className="col-6 col-md-6 col-sm-6">
-                      <h6 className="px-2">
-                        <span style={{ fontWeight: "400" }}>
-                          Abstract Text{" "}
-                        </span>
-                        <i className="bi bi-question-circle px-2"></i>
-                      </h6>
-                    </div>
-                    <div className="col-6 col-md-6 col-sm-6 ">
-                      <div className="audio-player justify-content-end px-3">
-                        <Button
-                          variant="outline-light"
-                          href="home#"
-                          size="sm "
-                          className="Homebutton"
-                        >
-                          Translate
-                        </Button>{" "}
-                      </div>
+        <div id="text">
+          <div className="main-wrapper">
+            {isVisibleconhide && (
+              <div class="container-flued">
+                <div className=" d-flex p-0">
+                  <div className="col-6 col-md-6 col-sm-6">
+                    <h6 className="px-2 mt-2">
+                      <span style={{ fontWeight: "400" }}>Abstract Text</span>
+                      {/* <i className="bi bi-question-circle px-2"></i> */}
+                    </h6>
+                  </div>
+                  <div className="col-6 col-md-6 col-sm-6 ">
+                    <div className="audio-player justify-content-end px-3">
+                      <Button
+                        variant="outline-light"
+                        href="home#"
+                        size="sm "
+                        className="Homebutton"
+                      >
+                        Translate
+                      </Button>
                     </div>
                   </div>
-                  <div className="wrapper mt-3">
-                   <form>
-                    <div className="text-input text-input-summ d-flex ">
+                </div>
+                <div className="wrapper mt-3">
+                  <div className="text-input d-flex trans-text-icon">
+                    <div className="col-lg-6 col-md-12 d-flex flex-wrap ">
                       <textarea
                         spellCheck="false"
                         className="from-text form-control"
@@ -297,173 +275,255 @@ const Abstract = () => {
                         name="text"
                         onChange={onChange}
                       />
+                    </div>
+                    <div className="col-lg-6 col-md-12 d-flex flex-wrap justify-content-center align-items-center ">
+                      {loader ? (
+                        <div>
+                          <ColorRing
+                            visible={true}
+                            height="30"
+                            width="30"
+                            ariaLabel="blocks-loading"
+                            wrapperStyle={{}}
+                            wrapperClass="blocks-wrapper"
+                            colors={[
+                              "#e15b64",
+                              "#f47e60",
+                              "#f8b26a",
+                              "#abbd81",
+                              "#849b87",
+                            ]}
+                          />
+                        </div>
+                      ) : (
+                        <textarea
+                          spellCheck="false"
+                          readOnly
+                          disabled
+                          value={ans}
+                          className="to-text form-control"
+                          placeholder="Summarize text"
+                        />
+                      )}
+                    </div>
+                  </div>
+
+                  <div className=" row   icon-container justify-content-center mt-1 p-2 ">
+                    <div class="col-md-6 trans-text1  d-flex flex-wrap">
+                      <div>
+                        <p className="px-2">Length:{length} </p>
+                      </div>
+                      <div>
+                        <p className="px-2">Sentences:{sentences} </p>
+                      </div>
+                      <div>
+                        <p className="px-2">Words:{words} </p>
+                      </div>
+                    </div>
+
+                    <div className=" col-md-6 text-end d-flex flex-wrap  ">
+                      <div class="col-sm-6 align-self-center ">
+                        <button
+                          className="btn play-button px-1"
+                          title="Copy"
+                          onClick={handleCopy}
+                        >
+                          <FontAwesomeIcon icon={faCopy} />
+                        </button>
+
+                        <button
+                          className="btn play-button px-1"
+                          title="Download"
+                          onClick={handleDownload}
+                        >
+                          <FontAwesomeIcon
+                            icon={faDownload}
+                            // onClick={handleDownload}
+                          />
+                        </button>
+                      </div>
+
+                      <div class="col-sm-3 text-end ">
+                        <Button
+                          type="submit"
+                          style={{ fontSize: "13px" }}
+                          onClick={handleSubmit}
+                          className="btn convert btn-primary  "
+                        >
+                          Summarize
+                        </Button>
+                      </div>
+
+                      <div class="col-sm-3 text-end">
+                        <Button
+                          className="btn convert btn-primary "
+                          style={{ fontSize: "13px" }}
+                          onClick={toggleVisibility}
+                        >
+                          Keywords
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {isVisible && (
+        <div className=" " id="text">
+          <div className="main-wrapper   " style={{ display: "contents" }}>
+            <div className="  d-flex p-0">
+              <div className="col-6 col-md-5 col-sm-6 ">
+                <h6 className="px-2 mt-2">
+                  <span style={{ fontWeight: "400" }}>Keywords </span>
+                  {/* <i className="bi bi-question-circle px-2"></i> */}
+                </h6>
+              </div>
+            </div>
+            <div className=" text-center align-items-center pt-2">
+              <div className=" text-input wrapper ">
+                {/* <div className="text-input text-input-summ d-flex ">
+                  <textarea
+                    spellCheck="false"
+                    className="from-text form-control"
+                    placeholder="Enter or paste your text and press 'Summarize.'"
+                    name="summarized_text"
+                    onChange={onChange}
+                  />
+                { keyLoader ? (
+                  <p>Loading</p>
+                ):
+                  (<textarea
+                    spellCheck="false"
+                    readOnly
+                    disabled
+                    value={keywordsans}
+                    className="to-text form-control"
+                    placeholder="Summarize text"
+                  />) }
+                </div> */}
+
+                <div className="text-input d-flex trans-text-icon">
+                  <div className="col-lg-6 col-md-12 d-flex flex-wrap ">
+                    <textarea
+                      spellCheck="false"
+                      className="from-text form-control"
+                      placeholder="Enter or paste your text and press 'Summarize.'"
+                      name="summarized_text"
+                      onChange={onChange}
+                    />
+                  </div>
+                  <div className="col-lg-6 col-md-12 d-flex flex-wrap ">
+                    {keyLoader ? (
+                      <div>
+                        <ColorRing
+                          visible={true}
+                          height="30"
+                          width="30"
+                          ariaLabel="blocks-loading"
+                          wrapperStyle={{}}
+                          wrapperClass="blocks-wrapper"
+                          colors={[
+                            "#e15b64",
+                            "#f47e60",
+                            "#f8b26a",
+                            "#abbd81",
+                            "#849b87",
+                          ]}
+                        />
+                      </div>
+                    ) : (
                       <textarea
                         spellCheck="false"
                         readOnly
-                        value={ans}
+                        disabled
+                        value={keywordsans}
                         className="to-text form-control"
                         placeholder="Summarize text"
-                       
                       />
-                       
-                    </div>
-                    </form>
-                    <div className=" row   icon-container justify-content-center mt-1 p-2 ">
-                      <div class="col-md-6 trans-text1  d-flex flex-wrap">
-                        <div>
-                          <p className="px-2">length:{length} </p>
-                        </div>
-                        <div>
-                          <p className="px-2">Sentences:{sentences} </p>
-                        </div>
-                         <div>
-                          <p className="px-2">Words:{words} </p>
-                        </div>
-                       
-                      </div>
-
-                      <div className=" col-md-6 text-end d-flex flex-wrap  ">
-                        <div class="col-sm-6 align-self-center">
-                          <button
-                            className="btn play-button px-1"
-                            onClick={handleCopy}
-                          >
-                            <FontAwesomeIcon icon={faCopy} />
-                          </button>{" "}
-                          <button
-                            className="btn play-button px-1"
-                            onClick={handleCopy}
-                          >
-                            <FontAwesomeIcon
-                              icon={faDownload}
-                              onClick={handleDownload}
-                            />
-                          </button>{" "}
-                        </div>
-                        <div class="col-sm-3 text-center ">
-                          <Button
-                            type="submit"
-                            style={{ fontSize: "13px" }}
-                            onClick={handleSubmit}
-                            className="btn convert btn-primary  "
-                          >
-                            Summarize
-                          </Button>
-                        </div>
-
-                        <div class="col-sm-3 text-center">
-                          <Button
-                            className="btn convert btn-primary "
-                            type="submit"
-                            style={{ fontSize: "13px" }}
-                            onClick={toggleVisibilitycon}
-                          >
-                            Keywords
-                          </Button>
-                        </div>
-                      </div>
-                    </div>
+                    )}
                   </div>
                 </div>
-              )}
-              {isVisiblecon && (
-                <div className="row   " style={{ display: "contents" }}>
-                  <div className="  d-flex ">
-                    <div className="col-5 col-md-5 col-sm-5  p-0">
-                      <h6 className="px-2">
-                        <span style={{ fontWeight: "400" }}>Keywords </span>
-                        <i className="bi bi-question-circle px-2"></i>
-                      </h6>
+
+                <div className=" row   icon-container align-items-center  pt-2">
+                  <div class="col-md-8 trans-text1  d-flex flex-wrap">
+                    {/* <div>
+                      <p className="px-2">Words:133 </p>
                     </div>
-                    <div className="col-7 col-md-7 col-sm-7 ">
-                      <div className="icons justify-content-end ">
-                        <div className="dropdown  ">
-                          <select
-                            class="form-select"
-                            aria-label="Default select example"
-                          >
-                            <option selected>Word Length</option>
-                            <option selected>1</option>
-                            <option value="1">2</option>
-                            <option value="2">3</option>
-                          </select>
-                        </div>
-                        <div className=" px-3 ">
-                          <input
-                            type="email"
-                            class="form-control"
-                            id="inputEmail4"
-                            placeholder=" Enter Words Count"
-                          />
-                        </div>
-                      </div>
-                    </div>
+
+                    <div>
+                      <p> Language: Hindi</p>
+                    </div> */}
                   </div>
-                  <div className=" text-center align-items-center pt-4">
-                    <div className=" text-input wrapper ">
-                      <div
-                        className="textarea-container "
-                        style={{ width: "100%" }}
-                      >
-                        <textarea
-                          spellCheck="false"
-                          className="from-text form-control to-text1"
-                          // placeholder="Translation"
-                          ref={textareaRef}
+
+                  <div className="row col-lg-6">
+                    <div className=" icons justify-content-start px-4 mb-2 ">
+                      <div className="dropdown  ">
+                        <select
+                          class="form-select"
+                          aria-label="Default select example"
+                          name="character_count"
+                          onChange={onChange}
+                        >
+                          <option>Word Length</option>
+                          <option>1</option>
+                          <option>2</option>
+                          <option>3</option>
+                        </select>
+                      </div>
+                      <div className=" px-3 ">
+                        <input
+                          type="text"
+                          name="top_word"
+                          onChange={onChange}
+                          class="form-control"
+                          id="inputEmail4"
+                          placeholder=" Enter Words Count"
                         />
                       </div>
 
-                      <div className=" row   icon-container align-items-center  pt-3">
-                        <div class="col-md-8 trans-text1  d-flex flex-wrap">
-                          <div>
-                            <p className="px-2">Words:133 </p>
-                          </div>
-
-                          <div>
-                            <p> Language: Hindi</p>{" "}
-                          </div>
-                        </div>
-
-                        <div className=" col-2  text-end ">
-                          <button
-                            className="btn play-button px-1"
-                            onClick={handleCopy}
-                          >
-                            <FontAwesomeIcon icon={faCopy} />
-                          </button>
-                          <button
-                            className="btn play-button px-1"
-                            onClick={handleCopy}
-                          >
-                            <FontAwesomeIcon
-                              icon={faDownload}
-                              onClick={handleDownload}
-                            />
-                          </button>
-                        </div>
-                        <div
-                          className=" col-2 text-end "
-                          // id="doc_btn"
+                      <div
+                        className="  text-end "
+                        // id="doc_btn"
+                      >
+                        <button
+                          type="submit"
+                          style={{ fontSize: "13px" }}
+                          className="btn convert btn-primary d-flex"
+                          onClick={keysubmit}
                         >
-                          <button
-                            type="button"
-                            style={{ fontSize: "13px" }}
-                            className="btn convert btn-primary d-flex"
-                            onClick={toggleVisibilityone}
-                          >
-                            {/* <i className="fa fa-play" aria-hidden="true"></i> */}
-                            Keywords
-                          </button>
-                        </div>
+                          {/* <i className="fa fa-play" aria-hidden="true"></i> */}
+                          Convert
+                        </button>
                       </div>
                     </div>
                   </div>
+
+                  <div className=" col-6  text-end ">
+                    <button
+                      className="btn play-button px-1"
+                      title="Copy"
+                      onClick={handleKeyCopy}
+                    >
+                      <FontAwesomeIcon icon={faCopy} />
+                    </button>
+                    <button
+                      className="btn play-button px-1"
+                      title="Download"
+                      onClick={handleKeyDownload}
+                    >
+                      <FontAwesomeIcon icon={faDownload} />
+                    </button>
+                  </div>
                 </div>
-              )}
+              </div>
             </div>
           </div>
-        </form>
-      </div>
+        </div>
+      )}
     </section>
   );
 };

@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from "react";
-
 import "bootstrap/dist/css/bootstrap.min.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -17,104 +16,9 @@ const contries = {
   "am-ET": "Amharic",
   "ar-SA": "Arabic",
   "be-BY": "Bielarus",
-  "bem-ZM": "Bemba",
-  "bi-VU": "Bislama",
-  "bjs-BB": "Bajan",
-  "bn-IN": "Bengali",
-  "bo-CN": "Tibetan",
-  "br-FR": "Breton",
-  "bs-BA": "Bosnian",
-  "ca-ES": "Catalan",
-  "cop-EG": "Coptic",
-  "cs-CZ": "Czech",
-  "cy-GB": "Welsh",
-  "da-DK": "Danish",
-  "dz-BT": "Dzongkha",
-  "de-DE": "German",
-  "dv-MV": "Maldivian",
-  "el-GR": "Greek",
-  "en-GB": "English",
-  "es-ES": "Spanish",
-  "et-EE": "Estonian",
-  "eu-ES": "Basque",
-  "fa-IR": "Persian",
-  "fi-FI": "Finnish",
-  "fn-FNG": "Fanagalo",
-  "fo-FO": "Faroese",
-  "fr-FR": "French",
-  "gl-ES": "Galician",
-  "gu-IN": "Gujarati",
-  "ha-NE": "Hausa",
-  "he-IL": "Hebrew",
-  "hi-IN": "Hindi",
-  "hr-HR": "Croatian",
-  "hu-HU": "Hungarian",
-  "id-ID": "Indonesian",
-  "is-IS": "Icelandic",
-  "it-IT": "Italian",
-  "ja-JP": "Japanese",
-  "kk-KZ": "Kazakh",
-  "km-KM": "Khmer",
-  "kn-IN": "Kannada",
-  "ko-KR": "Korean",
-  "ku-TR": "Kurdish",
-  "ky-KG": "Kyrgyz",
-  "la-VA": "Latin",
-  "lo-LA": "Lao",
-  "lv-LV": "Latvian",
-  "men-SL": "Mende",
-  "mg-MG": "Malagasy",
-  "mi-NZ": "Maori",
-  "ms-MY": "Malay",
-  "mt-MT": "Maltese",
-  "my-MM": "Burmese",
-  "ne-NP": "Nepali",
-  "niu-NU": "Niuean",
-  "nl-NL": "Dutch",
-  "no-NO": "Norwegian",
-  "ny-MW": "Nyanja",
-  "ur-PK": "Pakistani",
-  "pau-PW": "Palauan",
-  "pa-IN": "Panjabi",
-  "ps-PK": "Pashto",
-  "pis-SB": "Pijin",
-  "pl-PL": "Polish",
-  "pt-PT": "Portuguese",
-  "rn-BI": "Kirundi",
-  "ro-RO": "Romanian",
-  "ru-RU": "Russian",
-  "sg-CF": "Sango",
-  "si-LK": "Sinhala",
-  "sk-SK": "Slovak",
-  "sm-WS": "Samoan",
-  "sn-ZW": "Shona",
-  "so-SO": "Somali",
-  "sq-AL": "Albanian",
-  "sr-RS": "Serbian",
-  "sv-SE": "Swedish",
-  "sw-SZ": "Swahili",
-  "ta-LK": "Tamil",
-  "te-IN": "Telugu",
-  "tet-TL": "Tetum",
-  "tg-TJ": "Tajik",
-  "th-TH": "Thai",
-  "ti-TI": "Tigrinya",
-  "tk-TM": "Turkmen",
-  "tl-PH": "Tagalog",
-  "tn-BW": "Tswana",
-  "to-TO": "Tongan",
-  "tr-TR": "Turkish",
-  "uk-UA": "Ukrainian",
-  "uz-UZ": "Uzbek",
-  "vi-VN": "Vietnamese",
-  "wo-SN": "Wolof",
-  "xh-ZA": "Xhosa",
-  "yi-YD": "Yiddish",
-  "zu-ZA": "Zulu",
 };
 
 const DocumentTranslate = () => {
-  // onclick translate button progress bar start
   const [stepValue, setStepValue] = useState(0);
 
   const handleMove = () => {
@@ -215,164 +119,121 @@ const DocumentTranslate = () => {
   };
 
   return (
-    <div>
+    <>
+      <div className="row justify-content-start g-20  pb-2">
+        <div className="dropdown col-md-5 ">
+          <button
+            className="btn btn-primary dropdown-toggle"
+            type="button"
+            id="dropdownMenuButton1"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+          >
+            <i class="bi bi-translate px-1"></i>
+            Translation Option
+          </button>
+          <ul className="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+            <li>
+              <Link className="dropdown-item" to="/admin/home/">
+                <i class="bi bi-translate "></i>
+                Translate Text
+              </Link>
+            </li>
+            <hr className="dropdown-divider" />
+            <li>
+              <Link className="dropdown-item" to="/admin/AudioToText/">
+                <i className="bi bi-volume-up"></i>
+                Audio To Text
+              </Link>
+            </li>
+            <hr className="dropdown-divider" />
+
+            <li>
+              <Link className="dropdown-item" to="/admin/DocumentTranslate">
+                <i class="bi bi-file-earmark-text"></i>
+                Upload File To Text
+              </Link>
+            </li>
+          </ul>
+        </div>
+      </div>
+
       <div id="text">
         <form>
           <div className="main-wrapper">
             {isVisibleconhide && (
               <>
-                <div className="file-upload-container">
-                  <div
-                    className="file-upload-area "
-                    onDragOver={handleDragOver}
-                    onDrop={handleDrop}
-                  >
-                    <h4>Choose a document</h4>
-                    <p>Upload Word, PDF, Excel, CSV ,Custom XML files</p>
-                    <button
-                      type="button"
-                      className="btn btn-primary file-upload-button mb-3 mt-3"
+                <div className="px-5 documentupload">
+                  <div className="col">
+                    <select
+                      className="form-select text-center border-0"
+                      style={{ width: "auto" }}
+                      value={selectedFromLanguage}
+                      onChange={(e) => handleLanguageChange(e, true)}
                     >
+                      <option>Select language</option>
+                      {Object.entries(contries).map(([code, name]) => (
+                        <option key={code} value={code}>
+                          {name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div class=" col drop-zone">
+                    <span class="drop-zone__prompt ">
                       <input
                         type="file"
                         id="file-upload-input"
                         className="file-upload-input"
                         onChange={handleFileSelect}
                       />
+
                       <label
                         htmlFor="file-upload-input"
                         className="file-upload-label"
                       >
-                        <FontAwesomeIcon
-                          icon={faCloudUploadAlt}
-                          className="file-upload-icon"
-                        />
-                        <span> Upload and translate</span>
-                      </label>{" "}
-                    </button>
-                    <div className="file-upload-text">
-                      {selectedFile
-                        ? selectedFile.name
-                        : "Drag & Drop or Browse"}
+                        <div class="icon">
+                          <i class="bi bi-cloud-arrow-up-fill"></i>
+                          <p>Upload Word, PDF, Excel, CSV ,Custom XML filess</p>
+                        </div>
+                        <div className="file-upload-text">
+                          {selectedFile
+                            ? selectedFile.name
+                            : "Drag & Drop or Browse"}
+                        </div>
+                      </label>
+                    </span>
+                  </div>
+                  <div className="text-center d-flex g-2 mt-3">
+                    <div className="col">
+                      <button
+                        className="btn btn-primary mb-5 convert "
+                        onClick={toggleVisibilitycon}
+                      >
+                        Convert
+                      </button>
                     </div>
                   </div>
-                </div>
-                <div className="text-center mt-3">
-                  <button
-                    className="btn btn-primary mb-5 convert "
-                    onClick={toggleVisibilitycon}
-                  >
-                    Convert
-                  </button>
                 </div>
               </>
             )}
             {isVisiblecon && (
               <>
-                <div className=" p-0 mt-0 pb-1 audioArea ">
-                  {/* <div className="row "> */}
-                  <ul className="controlsDocuments list-unstyled d-flex flex-wrap justify-content-around">
-                    <div className="col-4 col-md-5 ">
-                      <li
-                        className=" select  selectoption flex-grow-1"
-                        style={{ float: "right" }}
-                      >
-                        <select
-                          className="form-select text-center "
-                          style={{ margin: "auto" }}
-                          value={selectedFromLanguage}
-                          onChange={(e) => handleLanguageChange(e, true)}
-                        >
-                          {" "}
-                          <option>Select language</option>
-                          {Object.entries(contries).map(([code, name]) => (
-                            <option key={code} value={code}>
-                              {name}
-                            </option>
-                          ))}
-                        </select>
-                      </li>
-                    </div>
-                    <div className="col-4 col-md-2 text-center">
-                      <li
-                        className="exchange  "
-                        onClick={handleExchangeLanguages}
-                      >
-                        <button
-                          className="circle"
-                          aria-label="Click to translate"
-                          data-toggle="tooltip"
-                          title="Translate"
-                          onClick={handleExchangeLanguages}
-                        >
-                          <span className="trans-btn-txt">
-                            <FontAwesomeIcon icon={faExchangeAlt} />
-                          </span>
-                        </button>
-                      </li>
-                    </div>
-                    <div className="col-4 col-md-5 ">
-                      <li
-                        className=" select selectoption flex-grow-1"
-                        style={{ float: "left" }}
-                      >
-                        <select
-                          className="form-select text-center"
-                          style={{ margin: "auto" }}
-                          value={selectedToLanguage}
-                          onChange={(e) => handleLanguageChange(e, false)}
-                        >
-                          {" "}
-                          <option>Select language</option>
-                          {Object.entries(contries).map(([code, name]) => (
-                            <option key={code} value={code}>
-                              {name}
-                            </option>
-                          ))}
-                        </select>
-                      </li>
-                    </div>
-                  </ul>
-                  {/* </div> */}
-                </div>
-                <div className=" row text-center align-items-center">
-                  <div className=" col-6 col-md-6 filename ">
-                    <div className="doc_name mt-4 ">
-                      <p>File name</p>
-                    </div>
-                  </div>
-                  <div className="col-6 col-md-6 mb-4 ">
-                    <button
-                      className="translate mt-4 btn btn-outline-success"
-                      onClick={handleMove}
-                      type="button"
-                    >
-                      Translate
-                    </button>
-                    <div className="progressbarWrapper">
-                      <span
-                        id="greenBar"
-                        style={{ width: `${stepValue}%` }}
-                      >{`${stepValue}%`}</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className=" text-input wrapper pb-4 border-top">
+                <div className=" text-input wrapper pb-4 ">
                   <div
                     className="textarea-container "
                     style={{ width: "100%" }}
                   >
                     <textarea
                       spellCheck="false"
-                      className="to-text1 p-4"
-                      placeholder="Translation"
+                      className="to-text1 p-3"
+                      // placeholder="Translation"
                       ref={textareaRef}
                     />
                   </div>
 
-                  <div className=" row   icon-container align-items-center ">
-                    <div className="col-md-8 trans-text1  d-flex flex-wrap">
+                  <div className=" row   icon-container ">
+                    <div className="col-md-8 lign-self-start trans-text1  d-flex flex-wrap">
                       <div>
                         <p className="px-2">Words:133 </p>
                       </div>
@@ -382,38 +243,39 @@ const DocumentTranslate = () => {
                       </div>
                     </div>
 
-                    <div className=" col-2  text-end ">
-                      <button
-                        className="btn play-button px-1"
-                        onClick={handleCopy}
-                      >
-                        <FontAwesomeIcon icon={faCopy} />
-                      </button>
-                      <button
-                        className="btn play-button px-1"
-                        onClick={handleCopy}
-                      >
-                        <FontAwesomeIcon
-                          icon={faDownload}
+                    <div className=" col-md-2 lign-self-end ms-md-auto">
+                      <div className=" d-flex text-end gap-2 ">
+                        <Link
+                          className="btn play-button"
+                          onClick={handleCopy}
+                          title="Copy Text"
+                        >
+                          <FontAwesomeIcon icon={faCopy} />
+                        </Link>
+                        <Link
+                          className="btn play-button"
                           onClick={handleDownload}
-                        />
-                      </button>
+                          title="Download"
+                        >
+                          <FontAwesomeIcon icon={faDownload} />
+                        </Link>
 
-                      <audio
-                        ref={audioRef}
-                        src="http://mainline.i3s.unice.fr/mooc/LaSueur.mp3"
-                      />
-                      <Link
-                        to="#"
-                        className="btn  btn-light btn-sm  play-button"
-                        title="Play"
-                        onClick={handlePlay}
-                      >
-                        <FontAwesomeIcon icon={faVolumeUp} />
-                      </Link>
+                        <Link
+                          to="#"
+                          className="btn  btn-light play-button"
+                          title="Play"
+                          onClick={handlePlay}
+                        >
+                          <audio
+                            ref={audioRef}
+                            src="http://mainline.i3s.unice.fr/mooc/LaSueur.mp3"
+                          />
+                          <FontAwesomeIcon icon={faVolumeUp} />
+                        </Link>
+                      </div>
                     </div>
                     <div
-                      className=" col-2 text-end "
+                      className=" col-md-2 ms-md-auto  lign-self-end  text-end "
                       // id="doc_btn"
                     >
                       <button
@@ -432,7 +294,7 @@ const DocumentTranslate = () => {
           </div>
         </form>
       </div>
-    </div>
+    </>
   );
 };
 

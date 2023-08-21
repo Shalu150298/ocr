@@ -5,9 +5,12 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./Signup.css";
 import { registerAdd } from "../../../core/Apis/auth/registerApis";
+import { ColorRing } from "react-loader-spinner";
 
 const Signup = () => {
   const [register, setRegister] = useState({});
+  const [loader, setLoader] = useState(false);
+
   const navigate = useNavigate();
   const onChange = (e) => {
     const name = e.target.name;
@@ -23,35 +26,37 @@ const Signup = () => {
   const handlesubmit = async (e) => {
     e.preventDefault();
     console.log("api hit ");
+    setLoader(true);
     registerAdd(register)
       .then((data) => {
         console.log(data);
-        
+        setLoader(false);
         toast.success("Registered Successfully", {
           onClose: () => {
-            navigate("/login")
+            navigate("/login");
           },
         });
       })
       .catch((e) => {
         console.log(e.response.data.error);
+        setLoader(false);
         toast.error(e.response.data.error);
       });
   };
   return (
     <div className="container">
       <ToastContainer
-          position="top-right"
-          autoClose={2000}
-          hideProgressBar={false}
-          newestOnTop={false}
-          closeOnClick
-          rtl={false}
-          pauseOnFocusLoss
-          draggable
-          pauseOnHover
-          theme="dark"
-        />
+        position="top-right"
+        autoClose={2000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="dark"
+      />
       <section className="section1 register min-vh-100 d-flex flex-column align-items-center justify-content-center py-4">
         <Container>
           <div className="row justify-content-center">
@@ -131,6 +136,23 @@ const Signup = () => {
                       </Form.Check>
                     </Col> */}
                     <div className="col-12">
+                       {loader ? (
+                        <ColorRing
+                          visible={true}
+                          height="30"
+                          width="30"
+                          ariaLabel="blocks-loading"
+                          wrapperStyle={{}}
+                          wrapperClass="blocks-wrapper"
+                          colors={[
+                            "#e15b64",
+                            "#f47e60",
+                            "#f8b26a",
+                            "#abbd81",
+                            "#849b87",
+                          ]}
+                        />
+                      ) : (
                       <Button
                         variant="primary"
                         className="w-100"
@@ -139,6 +161,7 @@ const Signup = () => {
                       >
                         Create Account
                       </Button>
+                      )}
                     </div>
                     <div className="col-12">
                       <p className="small mb-0">

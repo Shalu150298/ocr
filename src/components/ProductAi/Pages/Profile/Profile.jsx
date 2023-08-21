@@ -1,12 +1,22 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 
-import { AddProfile } from "../../../../core/Apis/Profile/profileApi";
+import {
+  AddProfile,
+  getProfile,
+} from "../../../../core/Apis/Profileuser/profileApi";
 
 const Profile = () => {
-  const [add, setAdd] = useState();
+  const [add, setAdd] = useState({
+    avatar: null,
+    user: "",
+    fullname: "",
+    contact: "",
+    dob: "",
+    address: "",
+  });
   const [image, setImage] = useState(null);
-
+  const [getProfileId, setGetProfileId] = useState();
   const onChange = (e) => {
     const name = e.target.name;
     const value = e.target.value;
@@ -17,12 +27,44 @@ const Profile = () => {
     }));
   };
 
+  const handleFileChange = (e) => {
+    const name = e.target.name;
+    const file = e.target.files[0];
+    setAdd((prevState) => ({
+      ...prevState,
+      [name]: file,
+    }));
+  };
+
+  
+  const profileid = async (e) => {
+    console.log("work on");
+    getProfile(getProfileId)
+      .then((data) => {
+        console.log(data);
+        const id = localStorage.getItem("user_id", data.data.user_id);
+        setGetProfileId(id);
+      })
+      .catch((e) => {
+        console.log(e);
+      });
+  };
+
+  useEffect(() => {
+    profileid();
+  }, []);
+
   const profile = async (e) => {
     e.preventDefault();
     const formdata = new FormData();
-    formdata.append('avatar', image);
-    console.log(image);
-    AddProfile(add, formdata)
+    formdata.append("avatar", add.avatar);
+    formdata.append("user", add.user);
+    formdata.append("fullname", add.fullname);
+    formdata.append("contact", add.contact);
+    formdata.append("dob", add.dob);
+    formdata.append("address", add.address);
+
+    AddProfile(formdata)
       .then((data) => {
         console.log(data);
       })
@@ -56,7 +98,7 @@ const Profile = () => {
                 <div className="social-links mt-2">
                   <Link to="#" className="twitter">
                     <i className="bi bi-twitter"></i>
-                  </Link> 
+                  </Link>
                   <Link to="#" className="facebook">
                     <i className="bi bi-facebook"></i>
                   </Link>
@@ -97,7 +139,7 @@ const Profile = () => {
                 {/* Profile Form start */}
                 <form>
                   <div class="tab-content ">
-                    {/* <div
+                    <div
                       class="tab-pane fade show active profile-overview"
                       id="profile-overview"
                     >
@@ -133,7 +175,7 @@ const Profile = () => {
                           A108 Adam Street, New York, NY 535022
                         </div>
                       </div>
-                    </div> */}
+                    </div>
 
                     <div
                       class="tab-pane fade profile-edit pt-3"
@@ -150,10 +192,7 @@ const Profile = () => {
                           <div class="pt-2 gap-2 d-flex">
                             <input
                               type="file"
-                              onChange={(e) => {
-                                setImage(e.target.files.FileList[0]);
-                                console.log(e.target.files);
-                              }}
+                              onChange={handleFileChange}
                               name="avatar"
                               id="file-input"
                               style={{ display: "none" }}

@@ -12,7 +12,7 @@ import "./assets/css/style.css";
 const Footer = () => {
   return (
     <div>
-      <footer id="footer">
+      <footer className="footer">
         <div className="footer-top">
           <div className="container">
             <div className="row">
@@ -96,10 +96,8 @@ const Footer = () => {
             <div className="me-md-auto text-center text-md-start">
               <div className="copyright">
                 &copy; {new Date().getFullYear()}{" "}
-                <strong>
-                  <span>Cloudstrats Inc</span>
-                </strong>
-                . All Rights Reserved
+                <strong>{/* <span>Cloudstrats Inc</span> */}</strong>. All
+                Rights Reserved
               </div>
               <div className="credits">
                 Designed by <a href="https://cloudstrats.com/">Cloudstrats</a>

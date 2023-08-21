@@ -1,17 +1,15 @@
 import axios from "axios";
 import jwt_decode from "jwt-decode";
 
-const axiosInstance = axios.create({
-   
-  baseURL: "http://3.6.100.199:3000/api/"  // local server
-  
- 
+const axiosInstance = axios.create({  
+  baseURL: "https://productuser.cloudstrats.ai:4443/api"  // local server
 });
  
 axiosInstance.interceptors.request.use(
   async (config) => {
     const access_token = localStorage.getItem("access_token"); // access token
     const refresh_token = localStorage.getItem("refresh_token"); // refresh token
+    const user = localStorage.getItem("user_id");
 
     if (access_token) {
       const { exp } = jwt_decode(access_token);
@@ -31,7 +29,11 @@ axiosInstance.interceptors.request.use(
           //   console.log(err);
           // }
         }
-      } else {
+      } if (!user) {
+        window.location.href = "/login";
+        console.log("user not valid");
+      }
+      else {
         config.headers["Authorization"] = `Bearer ${access_token}`;
       }
     }
@@ -51,7 +53,7 @@ axiosInstance.interceptors.response.use(
     // Handle any errors from the response
     if (error.response && error.response.status === 401) {
       // Redirect to login page if user is not authorized
-      window.location.href = "/login";
+      // window.location.href = "/login";
       console.log(error.response);
     }
     return Promise.reject(error);
