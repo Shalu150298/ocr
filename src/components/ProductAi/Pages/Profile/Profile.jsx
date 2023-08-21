@@ -15,7 +15,14 @@ const Profile = () => {
     dob: "",
     address: "",
   });
-  const [image, setImage] = useState(null);
+  const [avatar, setAvatar] = useState();
+  const [user , setUser] = useState();
+  const [fullName, setFullName] = useState();
+  const [contact, setContact] = useState();
+  const [dob, setDob] = useState();
+  const[address, setAddress] = useState();
+
+
   const [getProfileId, setGetProfileId] = useState();
   const onChange = (e) => {
     const name = e.target.name;
@@ -43,7 +50,21 @@ const Profile = () => {
       .then((data) => {
         console.log(data);
         const id = localStorage.getItem("user_id", data.data.user_id);
-        setGetProfileId(id);
+
+        setGetProfileId({"user": id});
+        console.log(data.data.user);
+        setUser(data.data.user);
+        console.log(data.data.fullname);
+        setFullName(data.data.fullname);
+        console.log(data.data.contact);
+        setContact(data.data.contact);
+
+        console.log(data.data.dob);
+        setDob(data.data.dob);
+        console.log(data.data.address);
+        setAddress(data.data.address);
+        console.log(data.data.avtar);
+        setAvatar(data.data.avtar);
       })
       .catch((e) => {
         console.log(e);
@@ -52,7 +73,7 @@ const Profile = () => {
 
   useEffect(() => {
     profileid();
-  }, []);
+  }, [profileid]);
 
   const profile = async (e) => {
     e.preventDefault();
@@ -92,9 +113,9 @@ const Profile = () => {
           <div className="col-xl-4">
             <div className="card">
               <div className="card-body profile-card pt-4 d-flex flex-column align-items-center">
-                <img alt="Profile" className="rounded-circle" />
-                <h2>Kevin Anderson</h2>
-                <h3>Web Designer</h3>
+                <img src={avatar} alt="Profile" className="rounded-circle" />
+                <h2>{fullName}</h2>
+                
                 <div className="social-links mt-2">
                   <Link to="#" className="twitter">
                     <i className="bi bi-twitter"></i>
@@ -147,32 +168,30 @@ const Profile = () => {
 
                       <div class="row">
                         <div class="col-lg-3 col-md-4 label">Email</div>
-                        <div class="col-lg-9 col-md-8">
-                          k.anderson@example.com
-                        </div>
+                        <div class="col-lg-9 col-md-8">{user}</div>
                       </div>
 
                       <div class="row">
                         <div class="col-lg-3 col-md-4 label">Name</div>
-                        <div class="col-lg-9 col-md-8">User</div>
+                        <div class="col-lg-9 col-md-8">{fullName}</div>
                       </div>
 
                       <div class="row">
                         <div class="col-lg-3 col-md-4 label">Phone</div>
                         <div class="col-lg-9 col-md-8">
-                          (436) 486-3538 x29071
+                          {contact}
                         </div>
                       </div>
 
                       <div class="row">
                         <div class="col-lg-3 col-md-4 label">DOB</div>
-                        <div class="col-lg-9 col-md-8">1997-08-24</div>
+                        <div class="col-lg-9 col-md-8">{dob}</div>
                       </div>
 
                       <div class="row">
                         <div class="col-lg-3 col-md-4 label">Address</div>
                         <div class="col-lg-9 col-md-8">
-                          A108 Adam Street, New York, NY 535022
+                         {address}
                         </div>
                       </div>
                     </div>
