@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 import {
   AddProfile,
@@ -16,12 +16,12 @@ const Profile = () => {
     address: "",
   });
   const [avatar, setAvatar] = useState();
-  const [user , setUser] = useState();
+  const [user, setUser] = useState();
   const [fullName, setFullName] = useState();
   const [contact, setContact] = useState();
   const [dob, setDob] = useState();
-  const[address, setAddress] = useState();
-
+  const [address, setAddress] = useState();
+  const navigate = useNavigate();
 
   const [getProfileId, setGetProfileId] = useState();
   const onChange = (e) => {
@@ -43,7 +43,6 @@ const Profile = () => {
     }));
   };
 
-  
   const profileid = async (e) => {
     console.log("work on");
     getProfile(getProfileId)
@@ -51,7 +50,11 @@ const Profile = () => {
         console.log(data);
         const id = localStorage.getItem("user_id", data.data.user_id);
 
-        setGetProfileId({"user": id});
+        if (!id) {
+          navigate("/login")
+        }else{
+
+        setGetProfileId({ user: id });
         console.log(data.data.user);
         setUser(data.data.user);
         console.log(data.data.fullname);
@@ -63,8 +66,10 @@ const Profile = () => {
         setDob(data.data.dob);
         console.log(data.data.address);
         setAddress(data.data.address);
-        console.log(data.data.avtar);
-        setAvatar(data.data.avtar);
+        console.log(data.data.avatar);
+        setAvatar(data.data.avatar);
+
+        }
       })
       .catch((e) => {
         console.log(e);
@@ -115,7 +120,7 @@ const Profile = () => {
               <div className="card-body profile-card pt-4 d-flex flex-column align-items-center">
                 <img src={avatar} alt="Profile" className="rounded-circle" />
                 <h2>{fullName}</h2>
-                
+
                 <div className="social-links mt-2">
                   <Link to="#" className="twitter">
                     <i className="bi bi-twitter"></i>
@@ -178,9 +183,7 @@ const Profile = () => {
 
                       <div class="row">
                         <div class="col-lg-3 col-md-4 label">Phone</div>
-                        <div class="col-lg-9 col-md-8">
-                          {contact}
-                        </div>
+                        <div class="col-lg-9 col-md-8">{contact}</div>
                       </div>
 
                       <div class="row">
@@ -190,9 +193,7 @@ const Profile = () => {
 
                       <div class="row">
                         <div class="col-lg-3 col-md-4 label">Address</div>
-                        <div class="col-lg-9 col-md-8">
-                         {address}
-                        </div>
+                        <div class="col-lg-9 col-md-8">{address}</div>
                       </div>
                     </div>
 

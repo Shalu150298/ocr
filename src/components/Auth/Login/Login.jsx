@@ -31,9 +31,17 @@ const Login = () => {
     loginAdd(user)
       .then((data) => {
         console.log(data);
-        localStorage.setItem("access_token", data.data.access_token);
-        localStorage.setItem("refresh_token", data.data.refresh_token);
-        localStorage.setItem("user_id", data.data.user_id);
+
+        const access = localStorage.setItem(
+          "access_token",
+          data.data.access_token
+        );
+
+       const refresh = localStorage.setItem(
+         "refresh_token",
+         data.data.refresh_token
+       );
+        const user =localStorage.setItem("user_id", data.data.user_id);
         setLoader(false);
         toast.success("Login Successfully", {
           onClose: () => {
